@@ -43,7 +43,9 @@ if __name__ == "__main__":
     f = open(csv_file_path, 'wb')
     csv_writer = csv.writer(f)
 
-    # !! TensorFlow 读取 csv 的时候，不需要也不会处理这一行 title 信息，只会直接读取数据
+    # !! When TensorFlow reads csv, it does not need or process the line title information, only the data is read directly.
+
+
     # csv_writer.writerow(['image_name', 'annotation_image_name']) 
 
     images = []
@@ -58,9 +60,11 @@ if __name__ == "__main__":
             if what == 'jpeg' or what == 'png':
 
                 '''
-                # 用下面这种方式检测 image 的有效性太慢了，放弃
+                # Using the following method to detect the validity of image is too slow, so I give up
                 image = cv2.imread(filepath, cv2.IMREAD_UNCHANGED)
-                # 运行的时候发现图片集里有异常图片，会遇到下面这几种问题
+                # When running, I found that there are abnormal images in the collection, and I will encounter the following problems.
+
+
                 if image is None:
                     print('image is None, path is: {}\n'.format(filepath))
                     continue
@@ -71,10 +75,10 @@ if __name__ == "__main__":
                 '''
 
                 if name.endswith('.jpg'):
-                    # 符合条件的图片
+                    # Eligible picture
                     name = os.path.splitext(name)[0]
                     # print('get_images_in_path, filepath is: {}, file name is: {}'.format(filepath, name))
-                    images.append(name[:-6])# name is like: zZu7xlG8IE_random_size_19_32_1_color，需要移除后面的 '_color' 字段
+                    images.append(name[:-6])# Name is like: zZu7xlG8IE_random_size_19_32_1_color, need to remove the following '_color' field
                     # http://stackoverflow.com/questions/10645959/how-do-i-remove-the-last-n-characters-from-a-string
 
     print('total {} *_color.jpg images'.format(len(images)))
@@ -98,11 +102,11 @@ if __name__ == "__main__":
         grayImage = cv2.cvtColor(image, cv2.COLOR_BGRA2GRAY)
         cv2.imwrite(annotation_gray_image_path, grayImage)
 
-        #二值化，这张图才是训练样本中的 Y 
+        #Binarization, this picture is the Y in the training sample.
         ret, threshGrayImage = cv2.threshold(grayImage, 20, 255, cv2.THRESH_BINARY)
         cv2.imwrite(annotation_thresh_gray_image_path, threshGrayImage)
 
-        # csv 里面保存的不是绝对路径，在 input_pipeline.py 里面还是需要根据FLAGS.dataset_root_dir进行拼装
+        # Csv does not store absolute paths. In input_pipeline.py, it still needs to be assembled according to FLAGS.dataset_root_dir.
         csv_writer.writerow([FLAGS.dataset_folder_name + '/' + color_image_name, 
                              FLAGS.dataset_folder_name + '/' + annotation_thresh_gray_image_name])
 
